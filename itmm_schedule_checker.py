@@ -46,7 +46,7 @@ senddatetime = False
 def get_last(prefix):
     names = [name for name in os.listdir(working_directory)
              if name.startswith(prefix)]
-    last = max(names, 
+    last = max(names,
         key=lambda n: datetime.strptime(n.split('_')[1][0:18], datetimeformat))
     path = os.path.join(working_directory, last)
     return path
@@ -86,7 +86,7 @@ class SchedulePageParser(HTMLParser):
                             self.div_level = 0
                             break
                 else:
-                    self.div_level += 1   
+                    self.div_level += 1
         if self.in_master_p and tag == 'a' and not self.link:
             for attr in attrs:
                 if attr[0] == 'href':
@@ -103,12 +103,12 @@ class SchedulePageParser(HTMLParser):
             if self.in_master_p:
                 date_match = self.date_regexp.search(data)
                 if date_match:
-                    date_tuple = tuple(int(str_num) 
+                    date_tuple = tuple(int(str_num)
                                  for str_num in date_match.group(0).split('.'))
                     self.date = date(*tuple(reversed(date_tuple)))
                 time_match = self.time_regexp.search(data)
                 if time_match:
-                    time_tuple = tuple(int(str_num) 
+                    time_tuple = tuple(int(str_num)
                                  for str_num in time_match.group(0).split(':'))
                     self.time = time(*time_tuple)
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
             print('Working directory is empty, have no data to compare.')
 
             current_page_data = urlopen(url).read()
-            current_html = current_page_data.decode('utf-8')        
+            current_html = current_page_data.decode('utf-8')
             parser_current = SchedulePageParser(content_div_style)
             parser_current.feed(current_html)
             pagefilename = 'page'+'_'+now_str+'.html'
@@ -182,7 +182,7 @@ if __name__ == '__main__':
             origfn = os.path.basename(urlparse(parser_current.link).path)
             schedulefilename = '_'.join(('schedule', now_str, origfn))
             current_schedule_data = urlopen(parser_current.link).read()
-            with open(os.path.join(working_directory, 
+            with open(os.path.join(working_directory,
                                    schedulefilename), 'wb') as f:
                 f.write(current_schedule_data)
 
@@ -201,7 +201,7 @@ if __name__ == '__main__':
         with open(get_last('schedule'), 'rb') as f:
             last_schedule_data = f.read()
 
-        current_html = current_page_data.decode('utf-8')        
+        current_html = current_page_data.decode('utf-8')
         parser_current = SchedulePageParser(content_div_style)
         parser_current.feed(current_html)
 
@@ -237,7 +237,7 @@ if __name__ == '__main__':
         if schedule_changed:
             origfn = os.path.basename(urlparse(parser_current.link).path)
             schedulefilename = '_'.join(('schedule', now_str, origfn))
-            with open(os.path.join(working_directory, 
+            with open(os.path.join(working_directory,
                                    schedulefilename), 'wb') as f:
                 f.write(current_schedule_data)
 
@@ -248,7 +248,7 @@ if __name__ == '__main__':
             d = difflib.Differ()
 
             last_content_lns = parser_last.content.splitlines(True)
-            current_content_lns = parser_current.content.splitlines(True)             
+            current_content_lns = parser_current.content.splitlines(True)
             content_diff_lns = d.compare(last_content_lns, current_content_lns)
             content_new_lns = [s[2:] for s in content_diff_lns if s[:2] =='+ ']
             content_old_lns = [s[2:] for s in content_diff_lns if s[:2] =='- ']
@@ -274,7 +274,7 @@ if __name__ == '__main__':
             changes.append('контент')
         if link_changed and not schedule_changed:
             changes.append('ссылка')
-        if (page_changed and 
+        if (page_changed and
              not (content_changed or (link_changed and not schedule_changed))):
             changes.append('страница')
         changes = ', '.join(changes)
@@ -315,6 +315,6 @@ if __name__ == '__main__':
                           'name': origfn}
 
         html_part = html_template.format(html_part)
-        msg = mail.make(from_email, to_email, subject, 
+        msg = mail.make(from_email, to_email, subject,
                         text_part, html_part, attachment)
         mail.send(msg)
