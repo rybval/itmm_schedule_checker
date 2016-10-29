@@ -68,6 +68,18 @@ class SchedulePageParser(HTMLParser):
         self.time_regexp = re.compile('[0-2]?[0-9]:[0-5][0-9]')
         HTMLParser.__init__(self, strict=False)
 
+    def _prepareHTML(self, HTML):
+        tags_to_delete = ("strong", "bold", "b", "em",
+                          "i", "span", "tt", "font")
+
+        prepared_HTML = HTML
+
+        for tag in tags_to_delete:
+             rgx = re.compile('(<{0}[^>]*>)|(</{0}>)'.format(tag),
+                                       flags=re.IGNORECASE)
+             prepared_HTML = re.sub(rgx, '', prepared_HTML)
+        return prepared_HTML
+
     def handle_starttag(self, tag, attrs):
         if self.content_div_style:
 
@@ -126,6 +138,7 @@ class SchedulePageParser(HTMLParser):
             self.in_master_p = False
 
     def feed(self, html):
+        html = self._prepareHTML(html)
         HTMLParser.feed(self, html)
         self.datetime = datetime.combine(self.date, self.time)
 
