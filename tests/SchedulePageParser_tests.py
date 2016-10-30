@@ -10,9 +10,10 @@ import itmm_schedule_checker
 
 class TestSchedulePageParser(unittest.TestCase):
     def setUp(self):
-        self.parser = itmm_schedule_checker.SchedulePageParser()
+        pass
 
     def test_WnenDifferentColorsInDateString(self):
+        self.parser = itmm_schedule_checker.SchedulePageParser()
         html = ('<p>Постоянное расписание магистров <strong>'
         '<a href="http://www.itmm.unn.ru/files/2016/08/Magistry_19102016.xls">'
         'здесь</a>&nbsp;</strong>'
@@ -29,6 +30,19 @@ class TestSchedulePageParser(unittest.TestCase):
                           '<a href="http://www.itmm.unn.ru/files/2016/08/Magistry_19102016.xls">'
                           'здесь</a>&nbsp;(новое! версия от 19.10.2016 г. '
                           '17:20)</p>'))
+
+    def test_WhenGetContent(self):
+        self.parser = itmm_schedule_checker.SchedulePageParser(
+                                       itmm_schedule_checker.content_div_style)
+        with open('schedule_webpage.html', encoding='utf-8') as file:
+            html = file.read()
+        with open('plain_content.txt', encoding='utf-8') as file:
+            content = file.read()
+
+        self.parser.feed(html)
+
+        self.assertEqual(self.parser.content, content)
+
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Schedule changes checker for http://itmm.unn.ru
 
@@ -59,7 +60,6 @@ class SchedulePageParser(HTMLParser):
         self.in_content_div = False
         self.in_master_p = False
         self.content = ''
-        self.html_content = ''
         self.link = None
         self.datetime = None
         self.date = None
@@ -82,13 +82,6 @@ class SchedulePageParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         if self.content_div_style:
-
-            if self.in_content_div:
-                attrsstr = ''
-                for attr in attrs:
-                    attrsstr += ' {0}="{1}"'.format(*attr)
-                self.html_content += '<{}{}>'.format(tag, attrsstr)
-
             if tag == 'div':
                 if not self.in_content_div:
                     for attr in attrs:
@@ -105,9 +98,6 @@ class SchedulePageParser(HTMLParser):
                     self.link = attr[1]
 
     def handle_data(self, data):
-        if self.in_content_div:
-            self.html_content += data
-
         if self.in_content_div or not content_div_style:
             self.content += data
             if "расписание магистров" in data.lower():
@@ -126,9 +116,6 @@ class SchedulePageParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if self.content_div_style and self.in_content_div:
-
-            self.html_content += '</{}>'.format(tag)
-
             if tag == 'div':
                 if self.div_level:
                     self.div_level -= 1
