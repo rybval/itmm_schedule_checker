@@ -14,7 +14,7 @@ Requires mail.py.
 
 Recommended for use with cron.
 
-Using: itmm_schedule_checker.py <from-email> <to-email>
+Using: itmm_schedule_checker.py <from-email> <to-email> [keyword [...]]
 """
 
 from urllib.request import urlopen
@@ -145,6 +145,13 @@ class HTMLtoPlainParser(HTMLParser):
         self.content = ''
         return text
 
+def keywords_highlight(html, keywords, format=None):
+    if not format:
+        format = ('<span style="font-size:150%; font-weight:bold; '
+                  'color:#6f0035;">{}</span>')
+    for keyword in keywords:
+        html = html.replace(keyword, format.format(keyword))
+    return html
 
 if __name__ == '__main__':
     # Script specific imports
@@ -152,11 +159,13 @@ if __name__ == '__main__':
     # to do:
     # from argparse import ArgumentParser
 
-    if len(sys.argv[1:]) != 2:
-        print('Using: itmm_schedule_checker.py <from-email> <to-email>')
+    if len(sys.argv[1:]) < 2:
+        print('Using: itmm_schedule_checker.py '
+              '<from-email> <to-email> [keyword [...]]')
     else:
         now_str = datetime.now().strftime(datetimeformat)
-        from_email, to_email = sys.argv[1:]
+        from_email, to_email = sys.argv[1:3]
+        keywords = sys.argv[3:]
 
         # flags
         page_changed = False
@@ -305,6 +314,7 @@ if __name__ == '__main__':
         if content_changed:
             text_part += '\n\n' + content_diff
             html_part += '<p></br> \n</br> \n</p>' + html_diff
+            html_part = keywords_highlight(html_part, keywords)
 
         # trying to prevent message clipping by gmail
         text_part += '\n\n' + now_str
